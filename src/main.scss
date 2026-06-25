@@ -1,0 +1,35 @@
+@use "@material/top-app-bar/mdc-top-app-bar";
+
+@use "@material/drawer";
+
+@use "@material/floating-label/mdc-floating-label";
+@use "@material/line-ripple/mdc-line-ripple";
+@use "@material/notched-outline/mdc-notched-outline";
+@use "@material/textfield";
+
+@use "@material/button/styles";
+
+@use "@material/snackbar/mdc-snackbar";
+
+@use "@material/tab-bar/mdc-tab-bar";
+@use "@material/tab-scroller/mdc-tab-scroller";
+@use "@material/tab-indicator/mdc-tab-indicator";
+@use "@material/tab/mdc-tab";
+
+@include drawer.core-styles;
+@include drawer.dismissible-core-styles;
+@include drawer.modal-core-styles;
+
+@include textfield.core-styles;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+    --mdc-theme-primary: hsl(0, 100%, 50%);
+    --mdc-theme-surface: hsl(0, 0%, 15%);
+    --mdc-ripple-color: hsla(0, 0%, 0%, 20%);
+}
