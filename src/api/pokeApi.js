@@ -57,3 +57,39 @@ export async function getPokemonById(id) {
     localStorage.setItem("pokemons", JSON.stringify(pokemons));
     return pokemons[index];
 }
+
+export async function getEvolutionChainById(id) {
+    const pokemons = JSON.parse(localStorage.getItem("pokemons") ?? "[]")
+    const index = pokemons.findIndex(x => x.id == id)
+    if (index === -1) return null
+
+    if (pokemons[index]?.evolutionChain)
+        return pokemons[index].evolutionChain
+
+    const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
+    const species = await speciesRes.json()
+
+    const chainRes = await fetch(species.evolution_chain.url)
+    const chain = await chainRes.json()
+
+    const result = []
+    let current = chain.chain
+
+    while (current) {
+        const evoId = Number(
+            current.species.url.split('/').filter(Boolean).pop()
+        )
+
+        result.push({
+            id: evoId,
+            name: current.species.name
+        })
+
+        current = current.evolves_to?.[0] || null
+    }
+
+    pokemons[index].evolutionChain = result
+    localStorage.setItem("pokemons", JSON.stringify(pokemons))
+
+    return result
+}

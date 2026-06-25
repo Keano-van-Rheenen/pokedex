@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
-import { getPokemonById } from '@/api/pokeApi'
+import { getPokemonById, getEvolutionChainById } from '@/api/pokeApi'
 
 const props = defineProps({
   id: {
@@ -12,6 +12,7 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const pokemon = ref(null)
+const evolution = ref([])
 
 const favourites = ref(
   JSON.parse(localStorage.getItem('favourites') ?? '[]')
@@ -23,6 +24,7 @@ const isFavourite = computed(() =>
 
 async function loadPokemon() {
   pokemon.value = await getPokemonById(props.id)
+  evolution.value = await getEvolutionChainById(props.id)
 }
 
 function toggleFavourite() {
@@ -51,13 +53,6 @@ watch(() => props.id, loadPokemon)
 
 <template>
   <div v-if="pokemon" class="pokemon-detail">
-    <button class="close-btn" @click="emit('close')" title="Close">
-      ✕
-    </button>
-
-    <button class="favourite-btn" @click="toggleFavourite" :title="isFavourite ? 'Remove favourite' : 'Add favourite'">
-      {{ isFavourite ? '❤️' : '🤍' }}
-    </button>
 
     <div class="hero">
       <img :src="pokemon.image" :alt="pokemon.name" class="hero-image">
@@ -76,32 +71,34 @@ watch(() => props.id, loadPokemon)
     </div>
 
     <div class="section">
-      <h2>Stats</h2>
+      <h2>Evolution</h2>
 
-      <div v-for="stat in pokemon.stats" :key="stat.name" class="row">
-        <span class="label">
-          {{ formatName(stat.name) }}
-        </span>
+      <div v-if="evolution.length" class="evo-chain">
+        <div
+          v-for="(evo, index) in evolution"
+          :key="evo.id"
+          class="evo-item"
+        >
+          <img
+            :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evo.id}.png`"
+            :alt="evo.name"
+          >
 
-        <span class="value">
-          {{ stat.base }}
-        </span>
+          <div class="name">
+            {{ formatName(evo.name) }}
+          </div>
+
+          <div v-if="index < evolution.length - 1" class="arrow">
+            →
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="empty">
+        No evolution data
       </div>
     </div>
 
-    <div class="section">
-      <h2>Abilities</h2>
-
-      <div v-for="ability in pokemon.abilities" :key="ability.name" class="row">
-        <span class="label">
-          {{ formatName(ability.name) }}
-        </span>
-
-        <span v-if="ability.isHidden" class="hidden-tag">
-          Hidden
-        </span>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -118,28 +115,6 @@ watch(() => props.id, loadPokemon)
   color: #e5e7eb;
 
   overflow: hidden;
-}
-
-.close-btn,
-.favourite-btn {
-  position: absolute;
-
-  border: none;
-  background: none;
-
-  cursor: pointer;
-  font-size: 24px;
-}
-
-.close-btn {
-  top: 12px;
-  right: 12px;
-  color: #ffffff;
-}
-
-.favourite-btn {
-  top: 12px;
-  left: 12px;
 }
 
 .hero {
@@ -190,49 +165,62 @@ watch(() => props.id, loadPokemon)
   color: #ffffff;
 }
 
-.row {
+.evo-chain {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-
-  padding: 10px 0;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 24px;
 }
 
-.label {
-  color: #d1d5db;
+.evo-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.value {
+.evo-item img {
+  width: 120px;
+  height: 120px;
+  image-rendering: pixelated;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 700;
   color: #ffffff;
-  font-weight: 600;
 }
 
-.hidden-tag {
-  padding: 4px 8px;
-
-  border-radius: 999px;
-
-  font-size: 12px;
-  font-weight: 600;
-
-  color: white;
-  background: #4caf50;
+.arrow {
+  font-size: 26px;
+  opacity: 0.6;
 }
 
-@media (max-width: 599px) {
-  .pokemon-detail {
-    padding: 16px;
+.empty {
+  color: #9ca3af;
+}
+
+.row {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .evo-chain {
+    flex-direction: column;
+    gap: 12px;
   }
 
-  .hero-image {
-    width: 120px;
-    height: 120px;
+  .evo-item {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
-  .hero h1 {
-    font-size: 1.75rem;
+  .evo-item img {
+    width: 100px;
+    height: 100px;
   }
 }
 </style>

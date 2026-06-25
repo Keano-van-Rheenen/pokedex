@@ -1,12 +1,12 @@
 <script setup>
-import { MDCTopAppBar } from '@material/top-app-bar'
 import { MDCDrawer } from '@material/drawer'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import Header from './components/Header.vue'
 import HamburgerSheet from './components/hamburger-sheet.vue'
 import { RouterView } from 'vue-router'
 
+const searchQuery = ref('')
 let navigation_drawer
 
 onMounted(() => {
@@ -18,13 +18,21 @@ onMounted(() => {
   })
 })
 
-const openDrawer = () => {
+function handleSearch(value) {
+  searchQuery.value = value
+}
+
+function openDrawer() {
   navigation_drawer.open = true
 }
 </script>
 
 <template>
-  <Header @toggle="openDrawer" />
+  <Header
+    @toggle="openDrawer"
+    @search="handleSearch"
+  />
+
   <HamburgerSheet />
 
   <main class="bodycontainer mdc-top-app-bar--fixed-adjust">
@@ -33,7 +41,7 @@ const openDrawer = () => {
     </div>
 
     <div class="content">
-      <RouterView />
+      <RouterView :search="searchQuery" />
     </div>
 
     <div class="stripeback">
@@ -46,16 +54,14 @@ const openDrawer = () => {
 html, body, #app {
   height: 100%;
   margin: 0;
-  overflow: hidden; /* IMPORTANT: page does NOT scroll */
+  overflow: hidden;
 }
 
-/* MAIN LAYOUT */
 .bodycontainer {
   display: flex;
-  height: 100vh; /* IMPORTANT: defines scroll boundary */
+  height: 100vh;
 }
 
-/* SIDE STRIPES */
 .stripeback {
   width: 15%;
   height: 100%;
@@ -75,16 +81,14 @@ html, body, #app {
   left: 50%;
 }
 
-/* SCROLL AREA */
 .content {
   flex: 1;
-  min-height: 0;       /* CRITICAL FIX */
-  overflow-y: auto;    /* THIS is your scrollbar */
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   justify-content: center;
 }
 
-/* optional wrapper so grid stays centered */
 .content > * {
   width: 100%;
 }

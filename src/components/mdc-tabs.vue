@@ -1,8 +1,17 @@
 <script setup>
-import { ref } from 'vue';
+defineProps({
+  modelValue: {
+    type: String,
+    default: 'pokemon'
+  }
+})
 
-// 'pokemon' is active by default, meaning 'evolutions' starts turned off
-const activeTab = ref('pokemon');
+const emit = defineEmits(['update:modelValue'])
+
+const tabs = [
+  { id: 'pokemon', label: 'Pokemon' },
+  { id: 'evolutions', label: 'Evolutions' }
+]
 </script>
 
 <template>
@@ -11,32 +20,19 @@ const activeTab = ref('pokemon');
       <div class="mdc-tab-scroller__scroll-area">
         <div class="mdc-tab-scroller__scroll-content">
 
-          <button 
-            class="mdc-tab" 
-            :class="{ 'mdc-tab--active': activeTab === 'pokemon' }"
-            role="tab" 
-            :aria-selected="activeTab === 'pokemon'" 
-            @click="activeTab = 'pokemon'"
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            class="mdc-tab"
+            :class="{ 'mdc-tab--active': modelValue === tab.id }"
+            role="tab"
+            :aria-selected="modelValue === tab.id"
+            @click="emit('update:modelValue', tab.id)"
           >
             <span class="mdc-tab__content">
-              <span class="mdc-tab__text-label">Pokemon</span>
+              <span class="mdc-tab__text-label">{{ tab.label }}</span>
             </span>
-            <span class="mdc-tab-indicator" :class="{ 'mdc-tab-indicator--active': activeTab === 'pokemon' }">
-              <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
-            </span>
-          </button>
-
-          <button 
-            class="mdc-tab" 
-            :class="{ 'mdc-tab--active': activeTab === 'evolutions' }"
-            role="tab" 
-            :aria-selected="activeTab === 'evolutions'" 
-            @click="activeTab = 'evolutions'"
-          >
-            <span class="mdc-tab__content">
-              <span class="mdc-tab__text-label">Evolutions</span>
-            </span>
-            <span class="mdc-tab-indicator" :class="{ 'mdc-tab-indicator--active': activeTab === 'evolutions' }">
+            <span class="mdc-tab-indicator" :class="{ 'mdc-tab-indicator--active': modelValue === tab.id }">
               <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
             </span>
           </button>
@@ -49,9 +45,11 @@ const activeTab = ref('pokemon');
 
 <style scoped>
 .underbar {
-  position: absolute;
-  left: 7.5%;
-  width: 85%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+
   background-color: #616161;
   z-index: 1;
 }
@@ -62,7 +60,6 @@ const activeTab = ref('pokemon');
   font-size: 1.1rem;
 }
 
-/* Material Design active styling colors */
 .mdc-tab {
   opacity: 0.6;
   transition: opacity 0.2s;

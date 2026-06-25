@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@material/button": "^14.0.0",
+    "@material/chips": "^14.0.0",
     "@material/drawer": "^14.0.0",
+    "@material/linear-progress": "^14.0.0",
     "@material/snackbar": "^14.0.0",
     "@material/tab-bar": "^14.0.0",
     "@material/textfield": "^14.0.0",
