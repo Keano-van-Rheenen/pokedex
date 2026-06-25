@@ -6,11 +6,11 @@ import './main.scss';
 import '@material/linear-progress/dist/mdc.linear-progress.css'
 import '@material/chips/dist/mdc.chips.css'
 
-// if ('serviceWorker' in navigator) {
-//     window.addEventListener('load', () => {
-//         navigator.serviceWorker.register("/pokeapi-vue/service-worker.js");
-//     });
-// }
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register("/pokeapi-vue/service-worker.js");
+    });
+}
 
 const app = createApp(App)
 
